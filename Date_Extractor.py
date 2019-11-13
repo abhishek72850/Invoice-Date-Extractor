@@ -25,27 +25,35 @@ class DateExtractor:
 			return None
 
 	def processDateExtraction(self,ext_text):
-		mnths='jan|feb|mar|april|may|june|july|aug|sept|oct|nov|dec'
+		try:
+			mnths='jan|feb|mar|april|may|june|jun|july|jul|aug|sept|oct|nov|dec'
 
-		#Types of Date Fromat to check in the Text
-		date_patterns = [r'\d{1,2}[-|/|.|\s]\d{1,2}[-|/|.|\s](\d{4}|\d{2})',
-						r'(\d{4}|\d{2})[-|/|.|\s]\d{1,2}[-|/|.|\s]\d{1,2}',
-						r'\d{1,2}[-|/|.|\s|,]('+mnths+')[-|/|.|\s|,](\d{4}|\d{2})',
-						r'('+mnths+')[-|/|.|\s|,]\d{1,2}[-|/|.|\s|,](\d{4}|\d{2})',]
+			#Types of Date Fromat to check in the Text
+			date_patterns = [r'\d{1,2}[-|/|.|\s|,]('+mnths+')[-|/|.|\s|,](\d{4}|\d{2})',
+							r'('+mnths+')[-|/|.|\s|,]\d{1,2}[-|/|.|\s|,](\d{4}|\d{2})',
+							r'\d{1,2}[-|/|.|\s]\d{1,2}[-|/|.|\s](\d{4}|\d{2})',
+							r'(\d{4}|\d{2})[-|/|.|\s]\d{1,2}[-|/|.|\s]\d{1,2}']
 
-		match=None
-		date_str = ''
+			match=None
+			date_str = ''
 
-		for pat in date_patterns:
-			match = re.search(pat, ext_text,re.IGNORECASE)
-			if(match!=None):
-				date_str = match.group()
-				break
+			for pat in date_patterns:
+				match = re.search(pat, ext_text,re.IGNORECASE)
+				if(match!=None):
+					date_str = match.group()
+					break
 
-		if(match==None):
-			return {'date': 'null'}
-		else:
-			#Returning Date in format YYYY-MM-DD
-			return {'date': search_dates(date_str)[0][1].strftime("%Y-%m-%d")}
+			if(match==None):
+				return {'date': 'null'}
+			else:
+				ext_date = search_dates(date_str)
+
+				if(ext_date!=None):
+					#Returning Date in format YYYY-MM-DD
+					return {'date': search_dates(date_str)[0][1].strftime("%Y-%m-%d")}
+				else:
+					return {'date': 'null'}	
+		except Exception as e:
+			return {'date':'null'}
 
 
