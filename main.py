@@ -2,14 +2,9 @@ from flask import Flask, request, jsonify
 import sys
 import io
 import os
-#from google.cloud import vision
-#from google.cloud.vision import types
-#from dateparser.search import search_dates
-#from datetime import datetime
 import json
 import base64
 from Date_Extractor import DateExtractor
-#from skimage.io import imread, imsave
 
 app = Flask(__name__) 
 
@@ -26,11 +21,17 @@ def extract_date():
 			de = DateExtractor()
 
 			try:
-				#Extracting Text From the Given Receipt Image
-				ext_text = de.processTextExtraction(base64.b64decode(data["base_64_image_content"]))
+
+				obj_detected = de.processObjectDetection(base64.b64decode(data["base_64_image_content"]))
+
+				if(obj_detected != None):
+					#Extracting Text From the Given Receipt Image
+					ext_text = de.processTextExtraction(base64.b64decode(obj_detected))
+				else:
+					return jsonify({'date':'null'})
 
 			except Exception as e:
-				return jsonify({'error':str(e)})
+				return jsonify({'error2':str(e)})
 
 			if(ext_text!=None):
 				if(type(ext_text)==dict):
@@ -44,7 +45,7 @@ def extract_date():
 				return jsonify({'date':'null'})
 
 		except Exception as e:
-			return jsonify({'error':str(e)})
+			return jsonify({'error1':str(e)})
 
 	else:
 		return 'Specify the Correct Content-Type'
